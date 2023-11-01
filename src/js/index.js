@@ -27,25 +27,25 @@ async function Search(evt) {
       Notiflix.Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
       );
+      return;
+    } else {
+      Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+
+      ELEM.gal.innerHTML = markup(data.hits);
+      new SimpleLightbox('.gallery a');
+      if (pageN * 40 > data.totalHits) {
+        ELEM.loadMore.classList.add('hidden');
+        Notiflix.Notify.info(
+          "We're sorry, but you've reached the end of search results."
+        );
+        return;
+      }
+      ELEM.loadMore.classList.remove('hidden');
     }
-
-    Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-
-    ELEM.gal.innerHTML = markup(data.hits);
-    new SimpleLightbox('.gallery a');
   } catch (err) {
     Notiflix.Notify.failure(`error ${err} Please try again.`);
   } finally {
     ELEM.form[0].value = '';
-
-    if (pageN * 40 >= data.totalHits) {
-      // ELEM.loadMore.classList.add('hidden');
-      Notiflix.Notify.info(
-        "We're sorry, but you've reached the end of search results."
-      );
-    } else {
-      ELEM.loadMore.classList.remove('hidden');
-    }
   }
 
   // const { height: cardHeight } =
