@@ -18,16 +18,10 @@ async function Search(evt) {
   pageN = 1;
   evt.preventDefault();
   userInput = evt.currentTarget[0].value;
+  let data = [];
 
   try {
-    const data = await imgSearch(pageN);
-
-    if (pageN * 40 > data.totalHits) {
-      ELEM.loadMore.classList.add('hidden');
-      Notiflix.Notify.info(
-        "We're sorry, but you've reached the end of search results."
-      );
-    }
+    data = await imgSearch(pageN);
 
     if (data.hits.length === 0) {
       Notiflix.Notify.failure(
@@ -43,7 +37,15 @@ async function Search(evt) {
     Notiflix.Notify.failure(`error ${err} Please try again.`);
   } finally {
     ELEM.form[0].value = '';
-    ELEM.loadMore.classList.remove('hidden');
+
+    if (pageN * 40 >= data.totalHits) {
+      // ELEM.loadMore.classList.add('hidden');
+      Notiflix.Notify.info(
+        "We're sorry, but you've reached the end of search results."
+      );
+    } else {
+      ELEM.loadMore.classList.remove('hidden');
+    }
   }
 
   // const { height: cardHeight } =
