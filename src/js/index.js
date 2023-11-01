@@ -7,47 +7,66 @@ const ELEM = {
   gal: document.querySelector('.gallery'),
   loadMore: document.querySelector('.load-more'),
 };
+
 let userInput;
-let pageN = 1;
+let pageN = 0;
+
 ELEM.form.addEventListener('submit', Search);
+ELEM.loadMore.addEventListener('click', loadMore);
 
 async function Search(evt) {
   pageN = 1;
   evt.preventDefault();
   userInput = evt.currentTarget[0].value;
 
-  const data = await imgSearch(pageN);
-  if (data.hits.length === 0) {
-    Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
+  try {
+    const data = await imgSearch(pageN);
+
+    if (data.hits.length === 0) {
+      Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+    }
+
+    Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+
+    ELEM.gal.innerHTML = markup(data.hits);
+
+    new SimpleLightbox('.gallery a');
+  } catch (err) {
+    Notiflix.Notify.failure(`error ${err} Please try again.`);
+  } finally {
+    ELEM.form[0].value = '';
+    ELEM.loadMore.classList.remove('hidden');
   }
-  Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-  markup(data.hits);
 
-  new SimpleLightbox('.gallery a');
+  // const { height: cardHeight } =
+  //   ELEM.gal.firstElementChild.getBoundingClientRect();
 
-  ELEM.form[0].value = '';
-  ELEM.loadMore.classList.remove('hidden');
+  // window.scrollBy({
+  //   top: cardHeight * 2,
+  //   behavior: 'smooth',
+  // });
+  // console.dir(ELEM.gal.firstElementChild);
 }
-
-ELEM.loadMore.addEventListener('click', loadMore);
 
 async function loadMore() {
   pageN += 1;
 
-  const data = await imgSearch(pageN);
-
-  if (pageN * 40 > data.totalHits) {
-    ELEM.loadMore.classList.add('hidden');
-    Notiflix.Notify.info(
-      "We're sorry, but you've reached the end of search results."
-    );
+  try {
+    const data = await imgSearch(pageN);
+    if (pageN * 40 > data.totalHits) {
+      ELEM.loadMore.classList.add('hidden');
+      Notiflix.Notify.info(
+        "We're sorry, but you've reached the end of search results."
+      );
+    }
+    ELEM.gal.insertAdjacentHTML('beforeend', markup(data.hits));
+    new SimpleLightbox('.gallery a');
+  } catch (err) {
+    Notiflix.Notify.failure(`error ${err} Please try again.`);
+  } finally {
   }
-
-  markup(data.hits);
-
-  new SimpleLightbox('.gallery a');
 }
 
 async function imgSearch(pageN) {
@@ -66,6 +85,8 @@ async function imgSearch(pageN) {
   const resp = await fetch(`${baseLink}?${searchOptions}`);
 
   if (!resp.ok) {
+    console.log(resp.statusText);
+    console.dir(resp);
     throw new Error(resp.statusText);
   }
 
@@ -107,5 +128,5 @@ function markup(arr) {
     )
     .join('');
 
-  ELEM.gal.innerHTML = result;
+  return result;
 }
