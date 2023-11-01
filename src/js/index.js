@@ -22,6 +22,13 @@ async function Search(evt) {
   try {
     const data = await imgSearch(pageN);
 
+    if (pageN * 40 > data.totalHits) {
+      ELEM.loadMore.classList.add('hidden');
+      Notiflix.Notify.info(
+        "We're sorry, but you've reached the end of search results."
+      );
+    }
+
     if (data.hits.length === 0) {
       Notiflix.Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
@@ -31,7 +38,6 @@ async function Search(evt) {
     Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
 
     ELEM.gal.innerHTML = markup(data.hits);
-
     new SimpleLightbox('.gallery a');
   } catch (err) {
     Notiflix.Notify.failure(`error ${err} Please try again.`);
