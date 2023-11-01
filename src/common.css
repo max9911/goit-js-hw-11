@@ -1,0 +1,32 @@
+.search-form {
+    margin-bottom: 20px;
+}
+
+
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    
+    gap: 10px;
+}
+.photo-card{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.info {
+    position: relative;
+    justify-content: space-around;
+    display: flex;
+    gap: 10px;
+}
+.info-item {
+   color: brown;
+}
+
+.hidden {
+    display: none;
+}
+.load-more {
+margin-bottom: 40px;
+}
