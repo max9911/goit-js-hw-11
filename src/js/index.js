@@ -24,6 +24,8 @@ async function Search(evt) {
     data = await imgSearch(pageN);
 
     if (data.hits.length === 0) {
+      ELEM.gal.innerHTML = '';
+      ELEM.loadMore.classList.add('hidden');
       Notiflix.Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
       );
@@ -47,15 +49,6 @@ async function Search(evt) {
   } finally {
     ELEM.form[0].value = '';
   }
-
-  // const { height: cardHeight } =
-  //   ELEM.gal.firstElementChild.getBoundingClientRect();
-
-  // window.scrollBy({
-  //   top: cardHeight * 2,
-  //   behavior: 'smooth',
-  // });
-  // console.dir(ELEM.gal.firstElementChild);
 }
 
 async function loadMore() {
